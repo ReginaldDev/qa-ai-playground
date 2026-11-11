@@ -5,6 +5,8 @@ import type { ToastItem } from '../components/ui/Toast';
 export interface PlaygroundState {
   activeTab: NavigationTabId;
   setActiveTab: (tab: NavigationTabId) => void;
+  isSidebarOpen: boolean;
+  setIsSidebarOpen: (open: boolean) => void;
   toasts: ToastItem[];
   addToast: (toast: Omit<ToastItem, 'id'>) => void;
   dismissToast: (id: string) => void;

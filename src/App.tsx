@@ -10,6 +10,7 @@ import type { NavigationTabId } from './types';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<NavigationTabId>('smart-data-mock');
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const dismissToast = useCallback((id: string) => {
@@ -24,13 +25,31 @@ export const App: React.FC = () => {
     }, 5000);
   }, []);
 
+  const handleSelectTab = useCallback((tab: NavigationTabId) => {
+    setActiveTab(tab);
+    setIsSidebarOpen(false);
+  }, []);
+
   return (
     <PlaygroundContext.Provider
-      value={{ activeTab, setActiveTab, toasts, addToast, dismissToast }}
+      value={{
+        activeTab,
+        setActiveTab: handleSelectTab,
+        isSidebarOpen,
+        setIsSidebarOpen,
+        toasts,
+        addToast,
+        dismissToast,
+      }}
     >
-      <div className="min-h-screen h-screen w-full bg-slate-950 text-slate-100 flex overflow-hidden">
-        {/* Left Navigation Sidebar */}
-        <Sidebar activeTab={activeTab} onSelectTab={setActiveTab} />
+      <div className="min-h-dvh h-dvh w-full bg-slate-950 text-slate-100 flex flex-col lg:flex-row overflow-hidden">
+        {/* Responsive Sidebar (Off-canvas Drawer on Mobile, Fixed Left Rail on Desktop lg+) */}
+        <Sidebar
+          activeTab={activeTab}
+          onSelectTab={handleSelectTab}
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+        />
 
         {/* Right Main Workspace Area */}
         <MainContainer>
