@@ -1,0 +1,72 @@
+name: 🧪 QA Smoke Tests (Robot Framework + Playwright)
+
+on:
+  push:
+    branches: [main, master, develop, '**']
+  pull_request:
+    branches: [main, master, develop]
+  workflow_dispatch:
+
+jobs:
+  smoke-test:
+    name: Smoke Test E2E (Robot + Browser/Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 📥 Checkout do Repositório
+        uses: actions/checkout@v4
+
+      - name: 🟢 Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'tests/requirements.txt'
+
+      - name: 📦 Instalar Dependências Frontend (npm)
+        run: npm ci
+
+      - name: 🏗️ Compilar Aplicação (TypeScript + Vite Build)
+        env:
+          VITE_GEMINI_API_KEY: ${{ secrets.VITE_GEMINI_API_KEY || 'ci_smoke_test_mock_key' }}
+        run: npm run build
+
+      - name: 🤖 Instalar Robot Framework + Playwright (Browser Library)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r tests/requirements.txt
+          rfbrowser init chromium
+
+      - name: 🚀 Subir Aplicação e Executar Smoke Tests E2E
+        run: |
+          npx vite preview --port 4173 --host &
+          SERVER_PID=$!
+
+          echo "Aguardando servidor iniciar em http://localhost:4173..."
+          for i in $(seq 1 30); do
+            if curl -sSf http://localhost:4173 > /dev/null; then
+              echo "Servidor online!"
+              break
+            fi
+            sleep 1
+          done
+
+          robot --outputdir results --variable BASE_URL:http://localhost:4173 --variable HEADLESS:True tests/smoke/qa_ai_playground_smoke.robot
+
+          kill $SERVER_PID || true
+
+      - name: 📊 Publicar Relatório do Robot Framework (Artifacts)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: robot-framework-smoke-report
+          path: results/
+          retention-days: 14
+

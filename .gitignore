@@ -13,6 +13,14 @@ dist
 dist-ssr
 *.local
 
+# Robot Framework & Playwright Test Results
+results/
+browser/
+output.xml
+log.html
+report.html
+playwright-log.txt
+
 # Environment Variables (Never commit API keys)
 .env
 .env.*

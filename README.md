@@ -61,3 +61,35 @@ npm.cmd run dev
 ```bash
 npm.cmd run build
 ```
+
+---
+
+## 🤖 Smoke Tests E2E (Robot Framework + Playwright) & CI/CD
+
+O repositório conta com uma suíte de **Smoke Tests E2E** construída com **Robot Framework** e **Browser Library (Playwright)** cobrindo os 3 módulos principais, assinatura do autor e responsividade **Mobile-First**.
+
+### Estrutura de Testes
+* [`tests/requirements.txt`](./tests/requirements.txt): Dependências Python (`robotframework` e `robotframework-browser`).
+* [`tests/resources/playground.resource`](./tests/resources/playground.resource): Keywords reutilizáveis e seletores mapeados.
+* [`tests/smoke/qa_ai_playground_smoke.robot`](./tests/smoke/qa_ai_playground_smoke.robot): Casos de teste (`CT01` a `CT05`) validando Desktop e Mobile (`375x812`).
+* [`.github/workflows/smoke-tests.yml`](./.github/workflows/smoke-tests.yml): Pipeline do **GitHub Actions** executado automaticamente a cada `push` ou `pull_request`, publicando o relatório HTML do Robot Framework como artefato.
+
+### Como Executar os Smoke Tests Localmente
+
+1. Instale o Robot Framework + Browser Library e inicialize o motor do Playwright:
+```bash
+pip install -r tests/requirements.txt
+rfbrowser init chromium
+```
+
+2. Em um terminal, gere o build e inicie o servidor na porta `4173`:
+```bash
+npm.cmd run build
+npm.cmd run preview
+```
+
+3. Em outro terminal, execute a suíte de Smoke Tests:
+```bash
+npm.cmd run test:smoke
+```
+Os relatórios (`report.html` e `log.html`) serão gerados na pasta `results/`.
