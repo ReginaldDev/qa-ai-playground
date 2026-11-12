@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview --port 4173",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "test:smoke": "robot --outputdir results tests/smoke/qa_ai_playground_smoke.robot"
   },
   "dependencies": {
@@ -18,11 +20,16 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.6",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.10",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^31.0.0",
     "tailwindcss": "^4.0.6",
     "typescript": "~5.7.2",
-    "vite": "^6.1.0"
+    "vite": "^6.1.0",
+    "vitest": "^5.1.0"
   }
 }
